@@ -1,0 +1,38 @@
+[[plugins]]
+repo = 'Shougo/dein.vim'
+
+[[plugins]]
+repo = 'scrooloose/nerdtree'
+
+# statusline
+[[plugins]]
+repo = 'itchyny/lightline.vim'
+
+# インデントを可視化
+[[plugins]]
+repo = 'Yggdroot/indentLine'
+
+# 無駄な空白をハイライト
+[[plugins]]
+repo = 'bronson/vim-trailing-whitespace'
+
+# j, k高速移動化
+[[plugins]]
+repo = 'rhysd/accelerated-jk'
+
+# f検索強化
+[[plugins]]
+repo = 'rhysd/clever-f.vim'
+
+[[plugins]]
+repo = 'romainl/Apprentice'
+hook_add = '''
+  colorscheme apprentice
+'''
+
+[[plugins]]
+repo = 'Shougo/deoplete.nvim'
+add_hook = 'let g:deoplete#enable_at_startup = 1'
+
+[[plugins]]
+repo = 'Shougo/neosnippet-snippets'
