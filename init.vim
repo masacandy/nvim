@@ -12,9 +12,8 @@ set expandtab
 set smartindent
 filetype off
 set t_Co=256
-" エンコード, ファイルエンコード
 set encoding=utf-8
-set fileencoding=utf-8
+set fileencodings=utf-8,cp932,euc-jp,iso-20220-jp,default,latin
 " スクロールする時に下が見えるようにする
 set scrolloff=5
 " コマンドラインモードで<Tab>キーによるファイル名補完を有効にする
@@ -35,7 +34,7 @@ set nocompatible
 set nostartofline
 
 " 対応括弧に<と>のペアを追加
-" set matchpairs& matchpairs+=<:>
+set matchpairs& matchpairs+=<:>
 
 " 対応括弧をハイライト表示する
 set showmatch
@@ -110,16 +109,58 @@ set completeopt+=noinsert
 if &compatible
   set nocompatible
 endif
-set runtimepath+=~/.cache/dein/repos/github.com/Shougo/dein.vim
-if dein#load_state('~/.cache/dein')
-  call dein#begin('~/.cache/dein')
-  call dein#load_toml('~/.config/nvim/dein.toml', {'lazy': 0})
-  call dein#load_toml('~/.config/nvim/dein_lazy.toml', {'lazy': 1})
+
+augroup MyAutoCmd
+  autocmd!
+augroup END
+
+" True Color対応
+if has('nvim')
+  " For Neovim 0.1.3 and 0.1.4
+  let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+
+  " Or if you have Neovim >= 0.1.5
+  if (has("termguicolors"))
+    set termguicolors
+  endif
+elseif has('patch-7.4.1778')
+  set guicolors
+endif
+
+let s:dein_cache_path = expand('~/.cache/nvim/dein')
+let s:dein_dir = s:dein_cache_path
+      \ .'/repos/github.com/Shougo/dein.vim'
+
+if &runtimepath !~ '/dein.vim'
+  if !isdirectory(s:dein_dir)
+    execute '!git clone https://github.com/Shougo/dein.vim' s:dein_dir
+  endif
+  execute 'set runtimepath+=' . fnamemodify(s:dein_dir, ':p')
+endif
+
+if dein#load_state(s:dein_cache_path)
+  call dein#begin(s:dein_cache_path)
+
+  call dein#load_toml('~/.config/nvim/dein.toml', {'lazy' : 0})
+  call dein#load_toml('~/.config/nvim/dein_lazy.toml', {'lazy' : 1})
+
   call dein#end()
   call dein#save_state()
 endif
+
 if dein#check_install()
   call dein#install()
 endif
+
 filetype plugin indent on
-syntax on
+
+if executable('typescript-language-server')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'typescript-language-server',
+        \ 'cmd': {server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
+        \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'tsconfig.json'))},
+        \ 'whitelist': ['typescript', 'typescript.tsx', 'typescriptreact'],
+        \ })
+endif
+
+syntax enable
